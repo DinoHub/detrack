@@ -6,7 +6,3 @@
 	path = deep_sort_realtime
 	url = git@github.com:levan92/deep_sort_realtime.git
 	branch = master
-[submodule "video_utils"]
-	path = video_utils
-	url = git@github.com:mervo/video_utils.git
-	branch = main
