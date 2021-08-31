@@ -2,7 +2,3 @@
 	path = ScaledYOLOv4
 	url = git@github.com:yhsmiley/ScaledYOLOv4.git
 	branch = yolov4-large-package
-[submodule "deep_sort_realtime"]
-	path = deep_sort_realtime
-	url = git@github.com:levan92/deep_sort_realtime.git
-	branch = master
