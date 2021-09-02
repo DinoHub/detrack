@@ -1,4 +1,4 @@
-# docker build -t od_tracking --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .
+# docker build -t detrack --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .
 
 FROM nvcr.io/nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
@@ -56,7 +56,7 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip
 COPY requirements.txt requirements.txt
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# install mish_cuda
+# install mish_cuda (for ScaledYOLOv4)
 RUN cd / && git clone https://github.com/JunnYu/mish-cuda && cd mish-cuda && python3 setup.py build install
 
 # minimal Dockerfile which expects to receive build-time arguments, and creates a new user called “user” (put at end of Dockerfile)
