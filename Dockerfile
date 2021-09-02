@@ -59,6 +59,28 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # install mish_cuda (for ScaledYOLOv4)
 RUN cd / && git clone https://github.com/JunnYu/mish-cuda && cd mish-cuda && python3 setup.py build install
 
+RUN pip3 install --no-cache-dir gdown
+
+# install ScaledYOLOv4
+RUN cd / && \
+    git clone https://github.com/yhsmiley/ScaledYOLOv4 && \
+    cd ScaledYOLOv4 && \
+    git checkout 8e128b2b69da7ce157e88355f58d947d049deb36 && \
+    cd scaledyolov4/weights && \
+    bash get_weights.sh && \
+    cd ../.. && \
+    pip3 install --no-cache-dir -e .
+
+# install DeepSORT
+RUN cd / && \
+    git clone https://github.com/levan92/deep_sort_realtime && \
+    cd deep_sort_realtime && \
+    git checkout 012ec4951580bbf844b5cd4536fe57128ed89b64 && \
+    cd deep_sort_realtime/embedder/weights && \
+    bash download_tf_wts.sh && \
+    cd ../../.. && \
+    pip3 install --no-cache-dir -e .
+
 # minimal Dockerfile which expects to receive build-time arguments, and creates a new user called “user” (put at end of Dockerfile)
 ARG USER_ID
 ARG GROUP_ID
