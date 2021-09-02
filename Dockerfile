@@ -65,7 +65,7 @@ RUN pip3 install --no-cache-dir gdown
 RUN cd / && \
     git clone https://github.com/yhsmiley/ScaledYOLOv4 && \
     cd ScaledYOLOv4 && \
-    git checkout 8e128b2b69da7ce157e88355f58d947d049deb36 && \
+    git checkout d9420e432a5aaca9ff50a9c5857aa9f251828126 && \
     cd scaledyolov4/weights && \
     bash get_weights.sh && \
     cd ../.. && \
