@@ -27,20 +27,20 @@ def cam_name_func(file):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--vid_list', help='Path of text file containing all video paths, 1 in each row', type=str, required=True)
-parser.add_argument('--context', help='Context of these set of videos (folder will be created in output dir)', type=str, required=True)
-parser.add_argument('--seconds', help='Number of seconds between each chip save', type=int, default=1)
-parser.add_argument('--infer_fps', help='FPS for inference', type=int, default=4)
+parser.add_argument('--infer_fps', help='FPS for inference (use higher fps for deepsort to work better)', type=int, default=4)
 parser.add_argument('--gpu_dev', help='Gpu device number to use. Default: 0', type=int, default=0)
-parser.add_argument('--save_chips_dir', help='Path of output directory to save extracted chips', default=None)
-parser.add_argument('--record_tracks_dir', help='Path of output directory to save inference video', default=None)
+parser.add_argument('--output_dir', help='Path of output directory', default='output')
+parser.add_argument('--save_chips', help='Whether to save cropped chips', action='store_true')
+parser.add_argument('--seconds', help='Number of seconds between each chip save', type=int, default=1)
+parser.add_argument('--record_tracks', help='Whether to save inference video', action='store_true')
 args = parser.parse_args()
 
 seconds = args.seconds
-context = args.context
 infer_fps = args.infer_fps
 classes_list = ['person']
-crop_chips = bool(args.save_chips_dir)
-record_tracks = bool(args.record_tracks_dir)
+output_dir = Path(args.output_dir)
+crop_chips = args.save_chips
+record_tracks = args.record_tracks
 
 with open(args.vid_list) as f:
     input_vids = f.read().splitlines()
@@ -62,10 +62,6 @@ od = ScaledYOLOV4(
 
 drawer = Drawer(color=(255, 0, 0))
 
-if crop_chips:
-    chips_save_dir = Path(args.save_chips_dir) / f'{context}_crops'
-    chips_save_dir.mkdir(parents=True, exist_ok=True)
-
 start_whole = time.time()
 for filename in input_vids:
     filename = Path(filename)
@@ -82,19 +78,20 @@ for filename in input_vids:
     print(f'{filename.stem} -- fps: {fps}, vid_width: {vid_width}, vid_height: {vid_height}, saving frame_skip: {save_frame_skip}, inference frame_skip: {infer_frame_skip}')
 
     if record_tracks:
-        output_track_dir = Path(args.record_tracks_dir)
-        output_track_dir.mkdir(parents=True, exist_ok=True)
-        out_track_fp = output_track_dir / f'inference_{cam_name}.avi'
+        output_dir.mkdir(parents=True, exist_ok=True)
+        out_track_fp = output_dir / f'{cam_name}_inference.avi'
         out_track = cv2.VideoWriter(str(out_track_fp), cv2.VideoWriter_fourcc(*'MJPG'), infer_fps, (vid_width, vid_height))
 
-    det_track_threads = {}
+    if crop_chips:
+        chips_save_dir = output_dir / f'{cam_name}_crops'
+        chips_save_dir.mkdir(parents=True, exist_ok=True)
 
     start_vid = time.time()
     for frame_count in itertools.count():
         try:
             status, frame = vidcap.read()
 
-            if not status: 
+            if not status:
                 break
 
             if (frame_count % infer_frame_skip == 0) or (frame_count % save_frame_skip == 0):

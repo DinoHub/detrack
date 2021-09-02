@@ -1,12 +1,11 @@
-WORKSPACE=/media/data/od_tracking
+WORKSPACE=/media/data/detrack
+DATA=/media/data/deep_sort_realtime
+DATA2=/media/data/ScaledYOLOv4
 
 docker run -it \
 	--gpus all \
-	--net host \
     -w $WORKSPACE \
 	-v $WORKSPACE:$WORKSPACE \
-	-v $HOME/.Xauthority:/root/.Xauthority:rw \
-	-v /tmp/.X11-unix:/tmp/.X11-unix \
-	-e DISPLAY=unix$DISPLAY \
-	-e QT_X11_NO_MITSHM=1 \
-	od_tracking
+	-v $DATA:$DATA \
+	-v $DATA2:$DATA2 \
+	detrack
