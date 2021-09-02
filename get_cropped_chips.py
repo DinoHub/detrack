@@ -4,9 +4,11 @@ import itertools
 import math
 import threading
 import time
+import traceback
 from pathlib import Path
 
 import cv2
+import pkg_resources
 
 from deep_sort_realtime.deepsort_tracker import DeepSort
 from drawer import Drawer
@@ -16,6 +18,8 @@ from scaledyolov4.scaled_yolov4 import ScaledYOLOV4
 
 # change this for different video naming
 def cam_name_func(file):
+    # name = file.stem.split('_')[1]  # FRone
+    # name = f"{file.parent.name.split('_')[0]}-{file.stem}" # NDP
     name = file.stem  # testvideo
     # print(f'name: {name}')
     return name
@@ -48,12 +52,12 @@ od = ScaledYOLOV4(
         # model_image_size=608,
         model_image_size=896,   # to detect mini hoomans
         # model_image_size=1280,
+        # model_image_size=1536,
         max_batch_size=1,
         half=True,
         same_size=True,
-        weights='ScaledYOLOv4/weights/yolov4-p5-state.pt',
-        classes_path='ScaledYOLOv4/data/coco.yaml',
-        cfg='ScaledYOLOv4/configs/yolov4-p5.yaml'
+        weights=pkg_resources.resource_filename('scaledyolov4', 'weights/yolov4-p6_-state.pt'),
+        cfg=pkg_resources.resource_filename('scaledyolov4', 'configs/yolov4-p6.yaml'),
     )
 
 drawer = Drawer(color=(255, 0, 0))
@@ -106,6 +110,7 @@ for filename in input_vids:
                     threading.Thread(target=save_chips, args=(frame, frame_count, all_tracks, chips_save_dir, cam_name), daemon=True).start()
 
         except Exception as e:
+            traceback.print_exc()
             print(f'Error: {e}')
             print(f'Killing {cam_name}..')
             vidcap.release()
